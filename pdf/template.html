@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="$if(lang)$$lang$$else$en$endif$">
+<head>
+<meta charset="utf-8">
+<title>$if(title)$$title$$else$$pagetitle$$endif$</title>
+$for(author-meta)$
+<meta name="author" content="$author-meta$">
+$endfor$
+$if(date-meta)$
+<meta name="dcterms.date" content="$date-meta$">
+$endif$
+$for(css)$
+<link rel="stylesheet" href="$css$">
+$endfor$
+</head>
+<body>
+$if(title)$
+<header class="head grid$if(author)$$else$$if(date)$$else$ no-meta$endif$$endif$">
+<div>
+$if(kicker)$
+<p class="kicker mono">$kicker$</p>
+$endif$
+<h1 class="title">$title$</h1>
+$if(subtitle)$
+<p class="subtitle">$subtitle$</p>
+$endif$
+</div>
+$if(author)$
+<dl class="meta mono">
+<dt>$if(author-label)$$author-label$$else$Author$endif$</dt>
+<dd>$for(author)$$author$$sep$<br>$endfor$</dd>
+$if(date)$
+<dt>$if(date-label)$$date-label$$else$Date$endif$</dt>
+<dd>$date$</dd>
+$endif$
+</dl>
+$else$
+$if(date)$
+<dl class="meta mono">
+<dt>$if(date-label)$$date-label$$else$Date$endif$</dt>
+<dd>$date$</dd>
+</dl>
+$endif$
+$endif$
+</header>
+$endif$
+<main class="prose">
+$body$
+</main>
+</body>
+</html>

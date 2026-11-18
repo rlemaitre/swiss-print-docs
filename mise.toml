@@ -1,0 +1,17 @@
+# Repo-only tools: swiss-doc runs them through `mise exec --cd <kit>`, so nothing is installed globally.
+# WeasyPrint comes from conda-forge, which ships pango and its other native libraries (Homebrew not needed).
+[tools]
+pandoc = "3.12.1"
+"conda:weasyprint" = "69.0"
+
+[tasks.test]
+description = "Build the sample PDF and check it"
+run = "scripts/smoke-test.sh"
+
+[tasks.lint]
+description = "shellcheck and shfmt on the shell scripts"
+run = ["shellcheck bin/swiss-doc scripts/smoke-test.sh", "shfmt -d bin/swiss-doc scripts/smoke-test.sh"]
+
+[tasks.sample]
+description = "Build examples/sample.md into out/"
+run = "bin/swiss-doc -o out examples/sample.md"

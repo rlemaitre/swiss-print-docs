@@ -1,0 +1,462 @@
+/* Swiss print design for paper, derived from rlemaitre.com (src/styles/tokens.css, prose.css, print.css). */
+
+@font-face {
+  font-family: 'Archivo';
+  font-weight: 500;
+  src: url('../fonts/archivo-latin-500-normal.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Archivo';
+  font-weight: 900;
+  src: url('../fonts/archivo-latin-900-normal.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  font-weight: 400;
+  src: url('../fonts/atkinson-hyperlegible-next-latin-400-normal.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  font-weight: 400;
+  font-style: italic;
+  src: url('../fonts/atkinson-hyperlegible-next-latin-400-italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  font-weight: 600;
+  src: url('../fonts/atkinson-hyperlegible-next-latin-600-normal.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  font-weight: 600;
+  font-style: italic;
+  src: url('../fonts/atkinson-hyperlegible-next-latin-600-italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-weight: 400;
+  src: url('../fonts/jetbrains-mono-latin-400-normal.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-weight: 500;
+  src: url('../fonts/jetbrains-mono-latin-500-normal.ttf') format('truetype');
+}
+
+/* Site tokens, with the site's print palette (white paper, black ink). */
+:root {
+  --bg: #fff;
+  --ink: #0b0b0b;
+  --muted: #5a5a55;
+  --accent: #d01414;
+  --code-bg: #f4f4f0;
+
+  --hl-keyword: #d01414;
+  --hl-type: #1f5fa8;
+  --hl-string: #8a5a00;
+  --hl-comment: #696962;
+
+  --font-display: 'Archivo', 'Arial Black', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-body: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+
+  --rule: 1px;
+  --rule-thick: 2px;
+  --gutter: 10px;
+}
+
+/* Page: A4, running title on the left, page count on the right, both in the mono label style. */
+@page {
+  size: A4;
+  margin: 18mm 18mm 20mm;
+
+  @bottom-left {
+    content: string(doc-title);
+    font-family: var(--font-mono);
+    font-size: 7pt;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  @bottom-right {
+    content: counter(page, decimal-leading-zero) ' / ' counter(pages, decimal-leading-zero);
+    font-family: var(--font-mono);
+    font-size: 7pt;
+    letter-spacing: 0.09em;
+    color: var(--accent);
+  }
+}
+
+@page :first {
+  @bottom-left {
+    content: none;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 10.5pt;
+  line-height: 1.55;
+  overflow-wrap: break-word;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 7.5pt;
+  font-weight: 400;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/* Title block: a ruled grid like the article header, title left, metadata right. */
+.head {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: var(--rule);
+  margin: 0 0 22pt;
+  background: var(--ink);
+  border-top: var(--rule-thick) solid var(--ink);
+  border-bottom: var(--rule-thick) solid var(--ink);
+}
+
+.head > * {
+  padding: 10pt var(--gutter);
+  background: var(--bg);
+}
+
+.head.no-meta {
+  grid-template-columns: 1fr;
+}
+
+.kicker {
+  margin: 0;
+  color: var(--accent);
+}
+
+.title {
+  string-set: doc-title content();
+  margin: 6pt 0 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 34pt;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  word-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.title em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.subtitle {
+  margin: 8pt 0 0;
+  font-size: 12pt;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-content: end;
+  gap: 3pt 8pt;
+  margin: 0;
+}
+
+.meta dt {
+  color: var(--muted);
+}
+
+.meta dd {
+  margin: 0;
+}
+
+/* Body text: prose.css at print sizes. */
+.prose {
+  counter-reset: section;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose p,
+.prose ul,
+.prose ol,
+.prose dl {
+  margin: 0 0 0.8em;
+}
+
+.prose strong,
+.prose b {
+  font-weight: 600;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  break-after: avoid;
+  font-family: var(--font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  word-spacing: 0.15em;
+}
+
+/* A level-1 heading inside the body is a part divider: bigger than h2, unnumbered. */
+.prose h1 {
+  margin: 1.6em 0 0.6em;
+  padding-top: 6pt;
+  border-top: var(--rule-thick) solid var(--ink);
+  font-size: 24pt;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+.prose h2 {
+  counter-increment: section;
+  margin: 1.8em 0 0.5em;
+  font-size: 16pt;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+.prose h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: inline-block;
+  margin-right: 9pt;
+  font-family: var(--font-mono);
+  font-size: 8pt;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+.prose h3 {
+  margin: 1.4em 0 0.35em;
+  font-size: 11.5pt;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.prose h4 {
+  margin: 1.2em 0 0.3em;
+  font-family: var(--font-mono);
+  font-size: 8pt;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+}
+
+.prose a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.3em;
+}
+
+.prose li {
+  margin: 0.2em 0;
+}
+
+/* The site uses ::marker { content }, which crashes WeasyPrint 70: a string list style draws the same dash. */
+.prose ul {
+  list-style-type: '— ';
+}
+
+.prose ul > li::marker {
+  color: var(--accent);
+}
+
+.prose ol > li::marker {
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  color: var(--accent);
+}
+
+.prose blockquote {
+  margin: 1.2em 0;
+  padding: 0 0 0 14px;
+  border-left: 5px solid var(--accent);
+  font-size: 1.08em;
+  font-style: italic;
+}
+
+.prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.prose hr {
+  margin: 1.6em 0;
+  border: 0;
+  border-top: var(--rule-thick) solid var(--ink);
+}
+
+.prose figure {
+  margin: 1.2em 0;
+  break-inside: avoid;
+}
+
+.prose img {
+  display: block;
+  max-width: 100%;
+  border: var(--rule) solid var(--ink);
+}
+
+.prose figcaption {
+  margin-top: 4pt;
+  font-family: var(--font-mono);
+  font-size: 7.5pt;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.prose table {
+  width: 100%;
+  margin: 1.2em 0;
+  border-collapse: collapse;
+  font-size: 9.5pt;
+}
+
+.prose th,
+.prose td {
+  padding: 4pt 7pt;
+  border: var(--rule) solid var(--ink);
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose th {
+  font-family: var(--font-mono);
+  font-size: 7.5pt;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.prose tr {
+  break-inside: avoid;
+}
+
+.prose dt {
+  font-weight: 600;
+}
+
+.prose dd {
+  margin: 0 0 0.4em 1.3em;
+}
+
+/* Code */
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0 3pt;
+  background: var(--code-bg);
+}
+
+.prose pre {
+  margin: 1.2em 0;
+  padding: 9pt 11pt;
+  border: var(--rule) solid var(--ink);
+  background: var(--code-bg);
+  font-size: 8.5pt;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  break-inside: avoid;
+}
+
+.prose pre code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+}
+
+/* Pandoc syntax highlighting classes, mapped to the swiss-print Slidev theme colors. */
+.prose pre code a {
+  text-decoration: none;
+}
+
+.prose code .kw,
+.prose code .cf,
+.prose code .im,
+.prose code .op {
+  color: var(--hl-keyword);
+}
+
+.prose code .dt,
+.prose code .bu,
+.prose code .fu {
+  color: var(--hl-type);
+}
+
+.prose code .st,
+.prose code .ch,
+.prose code .ss,
+.prose code .vs,
+.prose code .sc,
+.prose code .dv,
+.prose code .bn,
+.prose code .fl {
+  color: var(--hl-string);
+}
+
+.prose code .co,
+.prose code .cv,
+.prose code .do,
+.prose code .an {
+  color: var(--hl-comment);
+  font-style: italic;
+}
+
+/* Footnotes */
+.footnotes {
+  margin-top: 2em;
+  font-size: 8.5pt;
+  color: var(--muted);
+}
+
+.footnotes hr {
+  margin: 0 0 1em;
+  border: 0;
+  border-top: var(--rule) solid var(--ink);
+}
+
+.footnote-ref {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* Back links only make sense on screen, and the site fonts have no ↩ glyph. */
+.footnote-back {
+  display: none;
+}

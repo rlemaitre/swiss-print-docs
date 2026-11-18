@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# Convert Markdown to PDF in the rlemaitre.com Swiss print design.
+set -euo pipefail
+
+KIT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+readonly KIT_DIR
+readonly CSS="$KIT_DIR/pdf/swiss-print.css"
+readonly TEMPLATE="$KIT_DIR/pdf/template.html"
+
+usage() {
+	cat <<'EOF'
+Usage: swiss-doc [-o DIR] FILE.md [FILE.md ...]
+
+  -o DIR  output directory (default: next to each input file)
+  -h      show this help
+
+Front matter (all optional): title, subtitle, kicker, author, date, lang,
+author-label, date-label.
+EOF
+}
+
+die() {
+	echo "swiss-doc: $*" >&2
+	exit 1
+}
+
+# pandoc and weasyprint are pinned in the kit's mise.toml, not installed globally: run them from there.
+kit() {
+	mise exec --cd "$KIT_DIR" -- "$@"
+}
+
+# pandoc -> standalone HTML, then WeasyPrint with the input folder as base URL so relative images resolve.
+to_pdf() {
+	local input="$1" output="$2" html log
+	html="$(mktemp -t swiss-doc).html"
+	log="$(mktemp -t swiss-doc-log)"
+	# Runs once, when this function returns; removing itself stops it firing again from main.
+	trap 'rm -f "$html" "$log"; trap - RETURN' RETURN
+
+	kit pandoc "$input" --standalone --from markdown --to html5 \
+		--template "$TEMPLATE" --css "file://$CSS" \
+		--metadata pagetitle="$(basename "$input" .md)" \
+		--output "$html"
+	if ! kit weasyprint --base-url "$(dirname "$input")/" "$html" "$output" 2>"$log"; then
+		cat "$log" >&2
+		die "WeasyPrint failed on $input"
+	fi
+	# WeasyPrint reports ignored CSS and missing files as warnings: surface them.
+	if [[ -s "$log" ]]; then
+		cat "$log" >&2
+	fi
+}
+
+main() {
+	local out_dir="" opt
+	while getopts ":o:h" opt; do
+		case "$opt" in
+		o) out_dir="$OPTARG" ;;
+		h)
+			usage
+			exit 0
+			;;
+		:) die "-$OPTARG needs a value" ;;
+		*) die "unknown option -$OPTARG (see -h)" ;;
+		esac
+	done
+	shift $((OPTIND - 1))
+
+	[[ $# -gt 0 ]] || {
+		usage >&2
+		exit 1
+	}
+	command -v mise >/dev/null || die "mise not found: it provides pandoc and weasyprint (see README)"
+	# Absolute, because the tools run from the kit folder.
+	if [[ -n "$out_dir" ]]; then
+		mkdir -p "$out_dir"
+		out_dir="$(cd "$out_dir" && pwd)"
+	fi
+
+	local input dir
+	for input in "$@"; do
+		[[ -f "$input" ]] || die "no such file: $input"
+		input="$(cd "$(dirname "$input")" && pwd)/$(basename "$input")"
+		dir="${out_dir:-$(dirname "$input")}"
+		to_pdf "$input" "$dir/$(basename "${input%.*}").pdf"
+		echo "$dir/$(basename "${input%.*}").pdf"
+	done
+}
+
+main "$@"
