@@ -39,15 +39,15 @@
 }
 
 @font-face {
-  font-family: 'JetBrains Mono';
+  font-family: 'Geist Mono';
   font-weight: 400;
-  src: url('../fonts/jetbrains-mono-latin-400-normal.ttf') format('truetype');
+  src: url('../fonts/geist-mono-latin-400-normal.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: 'JetBrains Mono';
+  font-family: 'Geist Mono';
   font-weight: 500;
-  src: url('../fonts/jetbrains-mono-latin-500-normal.ttf') format('truetype');
+  src: url('../fonts/geist-mono-latin-500-normal.ttf') format('truetype');
 }
 
 /* Site tokens, with the site's print palette (white paper, black ink). */
@@ -64,7 +64,7 @@
   --hl-comment: #696962;
 
   --font-display: 'Archivo', 'Arial Black', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
   --font-body: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
 
   --rule: 1px;
